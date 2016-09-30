@@ -57,6 +57,34 @@ function barchart(data, labels) {
   return container;
 }
 
+function lineplot(xvalues, ...yvalues) {
+  var container = document.createElement('div');
+  container.className = "chartContainer";
+  new Chartist.Line(container,
+                    {
+                      labels: xvalues,
+                      series: yvalues
+                    },
+                    {
+                      width: "500px",
+                      height: "400px",
+                      axisX: {
+                        labelInterpolationFnc: function(value, index) {
+                          return index % 5 === 0 ? value.toPrecision(2) : null;
+                        }
+                      }
+                    });
+  return container;
+}
+
 function display(element) {
-  document.body.append(element);
+  if (typeof element === 'string') {
+    var paragraph = document.createElement('p');
+    paragraph.className = 'output-text';
+    paragraph.append(element);
+    document.body.append(paragraph);
+  }
+  else {
+    document.body.append(element);
+  }
 }

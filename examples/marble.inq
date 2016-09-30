@@ -1,0 +1,81 @@
+# How long does it take a marble to fall?
+
+_Imagine holding a marble 1 meter off the ground, then letting it go. 
+How long will it be before it hits the ground?_
+
+If we know how fast the marble is moving, then it is easy to figure out how long it takes to to 1 meter. But the problem is that when we drop something, the force of gravity accelerates it, so that it goes faster and faster as time goes on. Since the marble's speed is always changing we can't just divide the distance by the speed to get the time. One way to approach this problem is to simulate it.
+
+First, let's define some constants we'll use for this simulation:
+
+```
+const g = 9.8;   // Force of Earth gravity in meters/second^2
+const dt = 0.01; // Simulation time step in seconds.
+```
+
+Now we'll declare the variables that represent the state of the system, and specify the starting conditions for the system.  Our system is so simple that we just need a few variables:
+
+```
+// t is the amount of time (in seconds) that has elapsed since
+// we let go of the marble. The simulation starts at time 0.
+let t = 0.0;
+
+// h is the height of the marble above the ground, in meters.
+// We're simulating a marble dropped from 1 meter.
+let h = 1.0;
+
+// v is the velocity of the marble in meters per second.
+// We're holding the marble still when we drop it, so we start
+// with an initial velocity of 0
+let v = 0.0;
+```
+
+We're also going to need arrays to store the historical state of the system, so that we can produce graphs later on:
+
+```
+// Define arrays to hold the historical state of the system.
+// We initialize these arrays with the initial state.
+let times = [ t ];
+let heights = [ h ];
+let velocities = [ v ];
+```
+
+The core of this simulation is defining the code that computes the new state of the system based on the old state of the system.
+
+- Updating the time variable is easy: we just add the time step (the constant `dt`) to the previous value of the time variable.
+
+- To update the velocity variable, we need to know that (on earth) gravity accelerates falling objects (if we ignore air resistance) by 9.8 meters per second per second. After falling for one second, our marble would be traveling at 9.8 m/s. After a tenth of a second more, it would be falling .98 m/s faster and after a hundredth of a second more, it would be falling at .098 m/s faster than that value. We update the velocity of our system by adding this new velocity to the previous velocity. The amount of extra velocity at each time step depends on the force of gravity `g` and the length of the time step `dt`.
+
+- Finally, to update the height variable, we take the new velocity of the marble (in m/s) and multiply it by the time step `dt` to compute the distance it has fallen during that time step. Then we subtract that distance from the previous height to get the new height
+
+The code below wraps these state calculations up into a single function `updateState()` that computes the new state of the system and saves the new values of the state variables into the arrays:
+
+```
+// Compute the new state of the system based on the old state.
+// Remember the new state.
+function updateState() {
+  t = t + dt;
+  v = v + g * dt;
+  h = h - v * dt;
+
+  times.push(t);  // push() adds a value to the end of an array
+  velocities.push(v);
+  heights.push(h);
+}
+```
+
+Now that we've defined our initial state and a function to update that state, we simulate the falling marble by repeatedly calling updateState(). The question we're trying to answer is how long will it take until the marble hits the ground. So we keep calling updateState until the height is no longer greater than zero:
+
+```
+// Run the simulation. Keep calling updateState() as long as the
+// height is greater than zero
+while(h > 0) {
+  updateState();
+}
+```
+
+After running the simulation, let's look at the data we generated, and let's answer the question: how long does it take the marble to fall?
+
+```
+display(lineplot(times,heights,velocities));
+display('The marble hits the ground after approximately ' + t + 's.');
+```

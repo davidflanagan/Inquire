@@ -8,3 +8,9 @@ pre {
     background: #eee;
     padding: 5px;
 }
+
+.output-text {
+    border: solid black 3px;
+    background: #aea;
+    padding: 10px;
+}
