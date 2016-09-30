@@ -1,0 +1,10 @@
+/*
+ * These styles are applied to the output iframe and affect
+ * the inquiry document. See inquire.css for styles that affect
+ * the code editor
+ */
+pre {
+    border: solid black 1px;
+    background: #eee;
+    padding: 5px;
+}

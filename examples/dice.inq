@@ -1,0 +1,51 @@
+# Rolling Dice
+
+_If I roll dice and draw a histogram of their sums, what happens to the shape
+of this histogram as I change the number of dice, 
+the number of sides on the dice, and the number of rolls I do?_
+
+First, let's define some constants for the experiment. You can
+change these numbers to change the number of dice, and the number of
+sides on each die.
+
+```
+var numberOfDice = 6;      // This is how many dice we roll each time
+var numberOfSides = 10;     // This is how many sides each die has
+```
+
+Now, we'll define a function to roll these dice:
+
+```
+function roll() {
+  var sum = 0;
+  var rolled = 0;
+
+  while(rolled < numberOfDice) {
+    sum = sum + random(numberOfSides);
+    rolled = rolled + 1;
+  }
+
+  return sum;
+}
+```
+
+With that function defined, we can roll dice and draw
+histograms. Here's a histogram for 100 rolls:
+
+```
+var data = collect(100, roll);  // Roll the dice 100 times
+var counts = histogram(data);   // Compute a histogram for this data
+display(barchart(counts));      // And display the histogram
+```
+
+Let's do it again with 10,000 rolls. Note the more compact form of the code:
+
+```
+display(barchart(histogram(collect(10000, roll))));
+```
+
+And finally, 1,000,000 rolls:
+
+```
+display(barchart(histogram(collect(1000000, roll))));
+```
