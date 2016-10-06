@@ -1,0 +1,222 @@
+## SAT math scores, the normal distribution, and differences between groups: a computational exploration of the "bell curve"
+
+[2016 SAT data from the college board](https://secure-media.collegeboard.org/digitalServices/pdf/sat/total-group-2016.pdf)
+shows the following statistics for math scores on the math portion of the SAT test:
+
+2016 SAT Math Scores | Mean | Standard Deviation
+--------------------:|:----:|:-----------------:
+**all students**     |508   | 121
+**male students**    |524   | 126
+**female students**  |494   | 116
+
+In 2016, there was a 30 point difference in the average math score between male and female students. Note that this is a relatively small difference of about one quarter of the standard deviation.
+
+This difference between male and female scores has existed for many years. No one is sure why the difference exists, and there are probably many factors that contribute. Even though we don't know what causes the difference, we can explore some practical implications of the difference.
+
+### The Normal Distribution
+
+Let's assume that math scores on the SAT are normally distributed. This means that if you look at a histogram of test scores you'll see a bell-shaped curve with its highest point at the average score and a width that is proportional to the standard deviation. If we draw a histogram of all 2016 math scores, we'd expect to see that the most frequent score is 510. (Recall that SAT scores range from 200 to 800 in increments of 10.) We also expect that 68% of the scores will be between 390 and 630 (one standard deviation below or above the average) and that 95% of the scores will be between 270 and 750 (two standard deviations above or below the average). This means that we expect only about 2.5% of the scores to be above 750. (These numbers, 68% and 95%, are fundamental to the normal distribution so they apply to anything that we model using the normal distribution.)
+
+Let's generate some normally-distributed but random test scores and take a look at the histogram.  First, we need a function for generating random SAT scores:
+
+```
+function randomSATScore(mean, standardDeviation) {
+  // We start by generating a random value with mean 0 and 
+  // a standard deviation of 1.
+  var x = randomNormal();
+
+  // Then we multiply by the standard deviation to make the bell
+  // curve as wide as we want, and add the mean to center it
+  // where we want
+  x = x * standardDeviation + mean;
+
+  // Now we round to the nearest 10:
+  x = Math.round(x / 10) * 10;
+
+  // And finally, we adjust scores lower than 200 up to 200 and
+  // scores higher than 800 down to 800
+  if (x < 200) {
+    x = 200;
+  }
+  else if (x > 800) {
+    x = 800;
+  }
+
+  return x; // this is our random SAT score
+}
+```
+
+Now with that function defined, we'll one million random scores using the mean and standard deviation for all students and display a histogram:
+
+```
+var scores = collect(1000000, function() { 
+  return randomSATScore(508,121); 
+});
+
+var distribution = histogram(scores, 200, 800, 40);
+
+var chartLabels = [
+  200, 240, 280, 320, 360, 400,
+  440, 480, 520, 560, 600,
+  640, 680, 720, 760, 800]
+
+display(barchart(distribution, chartLabels));
+```
+
+There are bumps at the two ends of the histogram because a normal distribution of scores predicts that some scores will be less than 200 and some will be higher than 800, but the SAT scoring system rounds those scores up or down so that the minimum is 200 and the maximum is 800.
+
+### Group differences
+
+Now let's look at the differences between male and female scores. We'll simulate 1,000,000 male and 1,000,000 female student math scores, and compare the shapes of their distributions:
+
+```
+var femaleScores = collect(1000000, function() {
+  return randomSATScore(494, 116);
+});
+var femaleDistribution = histogram(femaleScores, 200, 800, 40);
+
+var maleScores = collect(1000000, function() {
+  return randomSATScore(524, 126);
+});
+var maleDistribution = histogram(maleScores, 200, 800, 40);
+
+display(barchart([femaleDistribution,maleDistribution],
+                 chartLabels));
+```
+
+With the two histograms shown side to side, you can see that the male score distribution is slightly wider and is shifted slightly to the right compared to the female score distribution. 
+
+### Digging deeper
+
+One notable feature of the chart above is that in the middle of the chart, for scores around 560, the number of male and female students with scores in that range are close to equal. But as we move to the right, the proportion of males gets higher and higher. Let's explore this quantitatively:
+
+```
+var table = new Table("Score range", "% Female", "% Male");
+
+for(var i = 7; i < chartLabels.length; i++) {
+  var label = chartLabels[i];
+  var female = femaleDistribution[i];
+  var male = maleDistribution[i];
+  var percentFemale = (female / (female + male) * 100).toFixed(1);
+  var percentMale = (male / (female + male) * 100).toFixed(1);
+  table.addRow(label, percentFemale, percentMale);
+}
+
+display(table);
+```
+
+This table shows that if we randomly pick 100 students with above-average scores of 540, 550, 560 or 570, we'd expect 51 of them to be male and 49 to be female, which would be an imperceptible difference in a crowd of 100 students. If we instead select students with higher scores between 580 and 610, we'd expect 53 males and 47 females. Again, this is not a difference that you'd notice right away if those 100 students were milling around in a room.
+
+But if we select students with scores between 740 and 770, then we have 68 males and 32 females, a very noticeable two men for every woman. And if we select only the top students with scores of 780, 790 and 900, then the room would be 75% male, with 3 men for every woman. 
+
+### Another analysis
+
+Let's analyze this another way. Recall that the average score for all
+students was about 510, with a standard deviation of about 120. If
+scores follow the normal distribution, we expect about 34% of students
+to score between 510 and 630 (the average and one standard deviation
+above the average) and another 16% to score above 630. So let's look
+at the gender breakdown of those score ranges. To do this we'll define
+a function that can analyze any range:
+
+```
+function analyzeRange(from, to) {
+  // Counts of male and female students in the specified range
+  var inRangeM = 0, inRangeF = 0;
+  // Counts for students scoring above the range
+  var aboveRangeM = 0, aboveRangeF = 0
+
+  function countScores(scores) {
+    var inRange = 0, aboveRange = 0;
+    scores.forEach(function(score) {
+      if (score >= from && score <= to) inRange++;
+      else if (score > to) aboveRange++;
+    });
+    return [inRange, aboveRange];
+  }
+
+  var [inRangeM, aboveRangeM] = countScores(maleScores);
+  var [inRangeF, aboveRangeF] = countScores(femaleScores);
+
+  var inRange = (100*inRangeM / (inRangeM + inRangeF)).toFixed(1);
+  var aboveRange = (100*aboveRangeM / (aboveRangeM + aboveRangeF)).toFixed(1);
+
+  display(`Students scoring ${from} - ${to} are ${inRange}% male.
+Students scoring > ${to} are ${aboveRange}% male.`);
+}
+```
+
+With that function defined, we can analyze scores within one standard
+deviation above average
+
+```
+analyzeRange(510,630);
+```
+
+Similarly, we expect about 48% of students to score between 510 and 750 (up to two standard deviations above the average) and just about 2% of students to score 760 or higher. Let's look at the gender breakdown of this more extreme range:
+
+```
+analyzeRange(510,750);
+```
+
+This is a fairly dramatic result. If we consider only student with average scores and higher, we expect about 95% of the students to earn scores within two standard deviations of average. If we select 100 students from within this vast majority of students we'll find that about 54 of them are male and 46 are female. Instead, if we select students from within the top 5%, we find that 73 are male and only 27 are female.
+
+### Conclusion
+
+Note that none of this discussion has actually been about the SAT math test; it has been about the normal distribution, and the analysis we've done here should apply any time we divide a data set into two groups and find a small (relative to the standard deviation) difference between the means for the two groups.
+
+What we've found is that the difference between the groups is not very noticeable for most group members who are clustered around the overall mean. But at the extremes (two standard deviations away from average, for example) the small difference in group averages is magnified and makes a big difference.
+
+We might interpret this by just looking at the bell shape of the normal distribution. Because the numbers drop off rapidly as we move further away from the average, a small increase in the average (i.e. a small shift of the bell curve to the right) can cause a relatively large increase in the number of scores at some value significantly above the average.
+
+### Appendix: How valid is our model?
+
+Keep in mind that this entire inquiry is based on the assumption that
+SAT math scores are normally distributed. The entire analysis has been
+done using only the average and standard deviation numbers of all
+students, male students and female students.
+
+The College Board does publish scores by gender for score ranges of
+100:
+
+Score Range| Male |Female
+-----------|------|------
+700-800    | 71999| 45068
+600-690    |151842|126127
+500-590    |217197|244596
+
+We can't use these raw numbers because different numbers of male and female students took the test, so first we'll adjust the numbers to see what they would look like if exactly one million male and one million female students took the test:
+
+```
+// This many boys and girls took the test in 2016:
+var nMale = 762247;
+var nFemale = 875342;
+// Scale factors to adjust to one million males and females
+var maleAdjustment = 1000000/nMale;
+var femaleAdjustment = 1000000/nFemale;
+
+// Adjusted numbers of students who scored 700 and above
+var highMale = 71999 * maleAdjustment;
+var highFemale = 45068 * femaleAdjustment;
+var totalHigh = highMale + highFemale;
+var highPercentMale = (100 * highMale / totalHigh).toFixed(1);
+
+// Adjusted numbers of students who scored 500 to 690
+var aboveAverageMale = (217197 + 151842) * maleAdjustment;
+var aboveAverageFemale = (244596 + 126127) * femaleAdjustment;
+var totalAboveAverage = aboveAverageMale + aboveAverageFemale;
+var aboveAveragePercentMale = (100 * aboveAverageMale / totalAboveAverage).toFixed(1);
+
+display(`
+Actual students scoring 500-690 were ${aboveAveragePercentMale}% male.
+Actual students scoring 700 and above were ${highPercentMale}% male.`);
+
+```
+
+Compare those actual (but adjusted) numbers to the predictions from our model:
+
+```
+analyzeRange(500,690);
+```
+
+Our normal-distribution based model overstates the gender differences at extreme scores and slightly underestimates the differences at moderate scores, but the modeled results are close enough to reality that insights derived from exploring the model like we've done here are probably valid in the real world.

@@ -7,8 +7,8 @@ var outputPrefix = `<html>
 <head>
 <meta charset="utf-8" />
 <title>INQUIRY</title>
-<link href="inquiry.css" rel="stylesheet">
 <link href="lib/chartist.css" rel="stylesheet">
+<link href="inquiry.css" rel="stylesheet">
 <script src="lib/chartist.js"></script>
 <script src="library.js"></script>
 </head>
@@ -41,21 +41,19 @@ function render(input) {
   return outputPrefix + marked(input, { renderer: renderer }) + outputSuffix;
 }
 
-
 run.onclick = function() {
   output.srcdoc = render(input.value);
-/*
-  if (output.hidden) {
-    output.srcdoc = render(input.value);
-    input.hidden = true;
-    output.hidden = false;
-    button.textContent = 'Edit';
-  }
-  else {
-    output.hidden = true;
-    input.hidden = false;
-    output.srcdoc = '';
-    button.textContent = 'Run';
-  }
-*/
 };
+
+window.addEventListener('load', function() {
+  var search = window.location.search;
+  if (search.startsWith('?url=')) {
+    var url = search.substring(5);
+    fetch(url)
+      .then(response => response.text())
+      .then(text => {
+        input.value = text;
+        output.srcdoc = render(text);
+      });
+  }
+});
