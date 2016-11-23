@@ -59,6 +59,8 @@ var chartLabels = [
   200, 240, 280, 320, 360, 400,
   440, 480, 520, 560, 600,
   640, 680, 720, 760, 800]
+distribution.label = '# of students'
+chartLabels.label = 'SAT Math Score'
 
 display(barchart(distribution, chartLabels));
 ```
@@ -74,11 +76,13 @@ var femaleScores = collect(1000000, function() {
   return randomSATScore(494, 116);
 });
 var femaleDistribution = histogram(femaleScores, 200, 800, 40);
+femaleDistribution.label = "females";
 
 var maleScores = collect(1000000, function() {
   return randomSATScore(524, 126);
 });
 var maleDistribution = histogram(maleScores, 200, 800, 40);
+maleDistribution.label = "males";
 
 display(barchart([femaleDistribution,maleDistribution],
                  chartLabels));

@@ -7,9 +7,8 @@ var outputPrefix = `<html>
 <head>
 <meta charset="utf-8" />
 <title>INQUIRY</title>
-<link href="lib/chartist.css" rel="stylesheet">
 <link href="inquiry.css" rel="stylesheet">
-<script src="lib/chartist.js"></script>
+<script src="lib/plotly-basic.js"></script>
 <script src="library.js"></script>
 </head>
 <body>`;
@@ -38,11 +37,17 @@ renderer.code = function(code, language) {
 }
 
 function render(input) {
-  return outputPrefix + marked(input, { renderer: renderer }) + outputSuffix;
+  var out = outputPrefix + marked(input, { renderer: renderer }) + outputSuffix;
+
+  // We can't use srcdoc to specify the iframe because of this Firefox SVG bug
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1319586
+  // output.srcdoc = out;
+  output.contentDocument.write(out);
+  output.contentDocument.close();
 }
 
 run.onclick = function() {
-  output.srcdoc = render(input.value);
+  render(input.value)
 };
 
 window.addEventListener('load', function() {
@@ -53,7 +58,7 @@ window.addEventListener('load', function() {
       .then(response => response.text())
       .then(text => {
         input.value = text;
-        output.srcdoc = render(text);
+        render(text);
       });
   }
 });

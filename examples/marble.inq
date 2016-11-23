@@ -76,6 +76,9 @@ while(h > 0) {
 After running the simulation, let's look at the data we generated, and let's answer the question: how long does it take the marble to fall?
 
 ```
+times.label = 'Time (s)'
+heights.label = 'Height (m)'
+velocities.label = 'Velocity (m/s)'
 display(lineplot(times,heights,velocities));
 display('The marble hits the ground after approximately ' + t + 's.');
 ```

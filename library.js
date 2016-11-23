@@ -93,40 +93,56 @@ function barchart(data, labels) {
 
   var container = document.createElement('div');
   container.className = "chartContainer";
+  container.style.width = '500px';
+  container.style.height = '400px';
 
-  var chart = new Chartist.Bar(container,
-                               {
-                                 labels: labels,
-                                 series: data
-                               },
-                               {
-                                 width: "500px",
-                                 height: "200px",
-                                 seriesBarDistance: 11,
-                                 axisY: {
-                                   onlyInteger: true
-                                 }
-                               });
+  var traces = data.map((yvalues) => {
+    return { x: labels, y: yvalues, type: 'bar', name: yvalues.label || '' }
+  })
+
+  Plotly.newPlot(container, traces, {
+    width: 500,
+    height: 400,
+    xaxis: {
+      title: labels.label || ''
+    },
+    yaxis: {
+      title: data.length === 1 && data[0].label
+        ? data[0].label
+        : ''
+    }
+  });
+
   return container;
 }
 
 function lineplot(xvalues, ...yvalues) {
   var container = document.createElement('div');
   container.className = "chartContainer";
-  new Chartist.Line(container,
-                    {
-                      labels: xvalues,
-                      series: yvalues
-                    },
-                    {
-                      width: "500px",
-                      height: "400px",
-                      axisX: {
-                        labelInterpolationFnc: function(value, index) {
-                          return index % 5 === 0 ? value.toPrecision(2) : null;
-                        }
-                      }
-                    });
+  container.style.width = '500px';
+  container.style.height = '400px';
+
+  var traces = yvalues.map((yval) => {
+    return { x: xvalues,
+             y: yval,
+             mode: 'lines+markers',
+             name: yval.label || ''
+           }
+  })
+
+  Plotly.newPlot(container, traces, {
+    width: 500,
+    height: 400,
+    xaxis: {
+      title: xvalues.label || ''
+    },
+    yaxis: {
+      title: yvalues.length === 1 && yvalues[0].label
+        ? yvalues[0].label
+        : ''
+    }
+  });
+
   return container;
 }
 

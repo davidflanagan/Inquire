@@ -29,15 +29,3 @@ th, td {
     padding: 5px;
     border: solid black 1px;
 }
-
-.ct-series-a .ct-bar {
-    stroke: red;
-}
-
-.ct-series-b .ct-bar {
-    stroke: blue;
-}
-
-.ct-series-c .ct-bar {
-    stroke: green;
-}
