@@ -76,6 +76,15 @@ function histogram(data, firstBin, lastBin, binWidth) {
   }
 }
 
+_Plotly_plot_options = {
+    displaylogo:false,
+    showLink: false,
+    modeBarButtons: [
+      ['zoom2d', 'pan2d', 'autoScale2d'],
+      ['zoomIn2d', 'zoomOut2d']
+    ]
+  }
+
 function barchart(data, labels) {
   if (!Array.isArray(data)) {
     throw new Error('First barchart() argument must be an array');
@@ -111,7 +120,7 @@ function barchart(data, labels) {
         ? data[0].label
         : ''
     }
-  });
+  }, _Plotly_plot_options);
 
   return container;
 }
@@ -141,7 +150,7 @@ function lineplot(xvalues, ...yvalues) {
         ? yvalues[0].label
         : ''
     }
-  });
+  }, _Plotly_plot_options);
 
   return container;
 }
