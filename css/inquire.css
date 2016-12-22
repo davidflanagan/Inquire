@@ -1,0 +1,82 @@
+#input {
+    position: relative;
+    height: 100%;
+    border:solid black 1px;
+}
+
+#output {
+    height:100%;
+    border:solid black 1px;
+}
+
+.CodeMirror {
+    height: 100%;
+    font-size: 13px;
+}
+
+#open-dialog {
+    width: 500px;
+    height: 425px;
+}
+
+#open-dialog .mdl-dialog__content thead {
+    display: block;
+}
+
+#open-dialog .mdl-dialog__content tbody {
+    display: block;
+    height: 215px;
+    overflow-y: auto;
+}
+
+#open-dialog tr>td:nth-child(1), #open-dialog tr>th:nth-child(1) {
+    width: 250px;
+}
+#open-dialog tr>td:nth-child(2), #open-dialog tr>th:nth-child(2) {
+    width: 125px;
+}
+#open-dialog tr>td:nth-child(3), #open-dialog tr>th:nth-child(3) {
+    width: 75px;
+}
+
+#delete-dialog {
+    width: 570px;
+    height: 450px;
+}
+
+#delete-dialog .mdl-dialog__content thead {
+    display: block;
+}
+
+#delete-dialog .mdl-dialog__content tbody {
+    display:block;
+    height: 215px;
+    overflow-y: auto;
+}
+
+#delete-dialog tr>td:nth-child(1), #delete-dialog tr>th:nth-child(1) {
+    width: 70px;
+}
+
+#delete-dialog tr>td:nth-child(2), #delete-dialog tr>th:nth-child(2) {
+    width: 250px;
+}
+#delete-dialog tr>td:nth-child(3), #delete-dialog tr>th:nth-child(3) {
+    width: 125px;
+}
+#delete-dialog tr>td:nth-child(4), #delete-dialog tr>th:nth-child(4) {
+    width: 75px;
+}
+
+#progress-bar {
+    width:100%
+}
+
+#confirm-dialog-text {
+    /* In confirm dialog newlines in message start new lines */
+    white-space: pre-line;
+}
+
+#inquiry-shared {
+    font-style: italic;
+}
