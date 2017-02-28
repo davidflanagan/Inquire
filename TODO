@@ -1,0 +1,24 @@
+- Make URL sharing work.
+   check hash on startup
+   DONE   figure out the startup sequence...
+   DONE   do I need to wait for the initial login or logout event before
+          loading the file named in the hash?
+   and on hashchange events
+
+- Figure out UI for displaying the creator of a shared file.
+   Maybe put the username where I've got "shared"/"private"
+
+- When viewing someone else's inqury, do I change Save As... to Copy...
+
+- Implement rename
+
+- Implement New
+
+- Disable rename, share and save buttons when viewing someone else's shared
+  file
+
+- don't allow share or rename of a new file that has not been saved
+  yet
+
+DONE - make the two line username+signout link a separate element from the
+  sign in button
